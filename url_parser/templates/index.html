@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Index page
+{% endblock %}
+
+{% block content %}
+    {% for child in tree.children recursive%}
+    
+        {% if child.children %}
+            {% if child.url %}
+                <{{ child.tag_name }} href="{{ child.url }}">
+            {% else %}
+                <{{ child.tag_name }}>
+            {% endif %}
+            {{ loop(child.children) }}
+            </{{ child.tag_name }}>
+
+        {% else %}
+            {% if child.data%}
+                {% if child.tag_name == "text" %}
+                    {{child.data | wordwrap(width) | replace("\n", "<br>") | safe}}
+                {% else %}
+                    <{{child.tag_name}}> {{child.data | wordwrap(10)}} </{{child.tag_name}}>
+                {% endif %}
+            {% endif %}
+
+            {% if child.tag_name == "img" %}
+                <img src="{{child.src}}" alt="{{child.data}}">
+            {% endif %}
+
+        {% endif %}
+    {% endfor %}
+{% endblock %}
