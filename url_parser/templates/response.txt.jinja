@@ -1,27 +1,22 @@
 {% for child in tree.children recursive %}
-    {%- if child.children -%}
+    {% if child.children %}
         {%- if child.tag_name == "li" -%}
-            {{'\n'}}- 
+            - 
         {%- endif -%}
-        {%- if child.tag_name in ["ol", "ul"] %}
-            {{'\n\n'}}Список: 
+        {%- if child.tag_name in ["ol", "ul"] -%}
+           Список: 
         {% endif -%}
         {{ loop(child.children) }}
 
-    {%- else-%}
-        {%- if child.data is defined and child.data is not none and child.data|length -%}
-            {%- if child.tag_name == "text" -%}
+    {%- else -%}
+        {% if child.data is defined and child.data is not none and child.data|length %}
+            {% if child.tag_name == "text" -%}
                 {{ child.data | wordwrap(width) }}
-            {%- elif child.tag_name == "li" -%}
+            {% elif child.tag_name == "img" -%}
+                {#{'\n\n'}#} {{child.src}} {#{'\n'}#}
+            {% else -%}
                 {{ child.tag_name }} {{ child.data | wordwrap(width) }}
-
-            {%- else -%}
-                {{ child.tag_name }} {{ child.data | wordwrap(width) }}
-            {%- endif -%}
-
-            {%- if child.tag_name == "img" -%}
-                {{child.src}} PICTURE
-            {%- endif -%}
+            {%- endif %}
         {%- endif -%}
     {%- endif -%}
 {% endfor %}
