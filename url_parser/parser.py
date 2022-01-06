@@ -1,14 +1,9 @@
 import requests
 from bs4 import BeautifulSoup, Comment
-import textwrap
 from urllib.parse import urljoin, urlparse
-# from semantic_tags import semantic_tags
 
-test_url = "https://github.com/GenessyX/backend-test-task"
-# test_url = "https://flask.palletsprojects.com/en/2.0.x/"
-
-
-tree = []
+not_parse = ['button', 'style', 'script', 'svg', 'form']
+inline_tags = ['a', 'abbr', 'acronym', 'b', 'bdo', 'big', 'br', 'button', 'cite', 'code', 'dfn', 'em', 'i', 'img', 'input', 'kbd', 'label', 'map', 'object', 'output', 'q', 'samp', 'script', 'select', 'small', 'span', 'strong', 'sub', 'sup', 'textarea', 'time', 'tt', 'var']
 
 class Tree_Node:
     def __init__(self, tag_name, data=None, url=None, src=None):
@@ -28,12 +23,9 @@ class Tree_Node:
 def append_tree(root_node, children):
     root_node.children = children
 
-# end_tags = ['h1', 'h2', 'h3', 'h4', 'h5']
-not_parse = ['button', 'style', 'script', 'svg', 'form']
 
 def make_tree(root_node, parse_content, domain_name):
     # Recursively parse html document
-
     children_exist = False
 
     # Check if node has children
@@ -58,10 +50,12 @@ def make_tree(root_node, parse_content, domain_name):
 
     if children_exist:
 
+        if parse_content.name in ['p', 'pre', 'span']:
+            root_node.data = parse_content.get_text().strip()
+            return None
+
         for child in parse_content.children:
-
             if child.name not in not_parse:
-
                 if child.name:
                     child_node = Tree_Node(child.name)
                     if child.attrs.get("href"):
