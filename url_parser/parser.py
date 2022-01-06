@@ -46,8 +46,14 @@ def make_tree(root_node, parse_content, domain_name):
             root_node.src = parse_content.attrs.get('src')
             root_node.data = parse_content.attrs.get('alt')
         if not parse_content.name:
+            if not len(parse_content.strip()):
+                return None
             root_node.data = parse_content.strip()
+            # print(len(root_node.data), root_node.data.count("\n"), root_node.data.count(" "), root_node.data)
+
         else:
+            if not len(parse_content.get_text().strip()):
+                return None
             root_node.data = parse_content.get_text().strip()
 
     if children_exist:
@@ -89,10 +95,10 @@ def parse_url(url: str, width: int = 50, img_link: bool = True):
         comments.extract()
 
 
-    start_html = soup.find_all(recursive=False)
-    root_node = Tree_Node(start_html[0].name)
+    start_html = soup.find_all(recursive=False)[0]
+    root_node = Tree_Node(start_html.name)
     domain_name = urlparse(url)
-    tree = make_tree(root_node, start_html[0], domain_name)
+    tree = make_tree(root_node, start_html, domain_name)
     return tree
 
 
