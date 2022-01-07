@@ -8,6 +8,7 @@ from .parser import clean_soup
 import tempfile
 import os, shutil, time
 import requests
+import urllib.parse
 
 bp = Blueprint("url_parser", __name__, url_prefix="/")
 
@@ -38,8 +39,15 @@ def parse_url_page():
 
     url = request.args.get("url")
 
+    if not urllib.parse.urlparse(url).scheme:
+        url = "https://" + url
+
     # Check if url returns ok code.
-    r = requests.get(url)
+    try:
+        r = requests.get(url)
+    except requests.exceptions.ConnectionError:
+        abort(404, "URL not found.")
+
     st_code = r.status_code
     if not st_code == requests.codes.ok:
         abort(st_code, "Url returned: {} status code".format(str(st_code)))
