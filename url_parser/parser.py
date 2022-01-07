@@ -3,13 +3,24 @@ from bs4 import BeautifulSoup, Comment
 from urllib.parse import urljoin, urlparse
 
 # html tags that do not contain valueable text
-not_parse = ['button', 'style', 'script', 'svg', 'form', 'nav', 'header', 'footer', 'menu']
-not_parse_class = ['.menu', '.banner']
+not_parse = [
+    "button",
+    "style",
+    "script",
+    "svg",
+    "form",
+    "nav",
+    "header",
+    "footer",
+    "menu",
+]
+not_parse_class = [".menu", ".banner"]
+
 
 def clean_soup(soup):
 
     # remove comments:
-    for comments in soup.find_all(text=lambda text:isinstance(text, Comment)):
+    for comments in soup.find_all(text=lambda text: isinstance(text, Comment)):
         comments.extract()
 
     # remove unnecessary tags from soup
@@ -22,6 +33,6 @@ def clean_soup(soup):
             el.extract()
 
     # remove head
-    soup.find('head').extract()
+    soup.find("head").extract()
 
     return soup
