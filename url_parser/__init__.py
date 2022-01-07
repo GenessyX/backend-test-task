@@ -12,7 +12,7 @@ def create_app(test_config=None):
 
     # Configure caching.
     app.config["CACHE_FOLDER"] = "cache"
-    app.config["CACHE"] = 0
+    app.config["CACHE"] = 1
     app.config["CACHE_DURATION"] = 12 * 60 * 60  # 12 hrs.
 
     # Trim whitespaces from generated txt
