@@ -78,10 +78,6 @@ def parse_url_page():
     tree = BeautifulSoup(r.content, "html.parser")
     tree = clean_soup(tree)
 
-    # print(tree)
-    # print(type(tree))
-    # print(list(tree.children))
-
     # Generate txt file.
     rendered_template = render_template(
         "response.txt.jinja", tree=tree, width=width, img_flag=img_flag
