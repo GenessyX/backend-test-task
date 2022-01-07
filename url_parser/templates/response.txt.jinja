@@ -1,15 +1,12 @@
-{% for child in tree.children recursive %}
-    {%- if child.children -%}
+{% set end_parse_tags = ['td', 'pre', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']%}
+{%- for child in tree.children recursive -%}
+    {%- if child.children | first and child.name not in end_parse_tags -%}
         {{ loop(child.children) }}
     {%- else -%}
-        {% if child.data is defined and child.data is not none and child.data|length > 5 %}
-            {% if child.tag_name == "text" -%}
-                {{ child.data | wordwrap(width) }}
-            {% elif child.tag_name == "img" and img_flag -%}
-                {{'\n'}}{{child.src}}
-            {% else -%}
-                {{ child.data | wordwrap(width) }}
-            {%- endif %}
-        {%- endif -%}
+        {%- if child.name == 'img' and child.attrs.get('src') -%}
+            {{ child.attrs.get('src') + "\n" }}
+        {%- elif child.get_text().strip() -%}
+            {{ child.get_text().replace("\n", " ").strip() | wordwrap(width) }}
+        {% endif -%}
     {%- endif -%}
-{% endfor %}
+{%- endfor -%}

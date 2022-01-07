@@ -9,14 +9,14 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
     )
 
+    # Configure caching.
     app.config['CACHE_FOLDER'] = 'cache'
     app.config['CACHE'] = 0
-    app.config['CACHE_DURATION'] = 12*60*60
+    app.config['CACHE_DURATION'] = 12*60*60 # 12 hrs.
 
+    # Trim whitespaces from generated txt
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
-
-
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -40,6 +40,5 @@ def create_app(test_config=None):
     # url parser page
     from . import url_parser
     app.register_blueprint(url_parser.bp)
-
 
     return app
