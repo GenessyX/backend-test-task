@@ -41,6 +41,7 @@ class Parser:
             "button",
             "style",
             "script",
+            "noscript",
             "svg",
             "form",
             "nav",
@@ -48,7 +49,15 @@ class Parser:
             "footer",
             "menu",
         ]
-        self.not_parse_class = [".menu", ".banner"]
+        self.not_parse_selectors = [
+            "[class*='social']",
+            "[class*='banner']",
+            "[class*='menu']",
+            "[class*='tags']",
+            "[class*='news-feed']",
+            "[width='1']",
+            "[height='1']"
+            ]
 
     @staticmethod
     def get_soup(response):
@@ -63,7 +72,7 @@ class Parser:
             for el in soup.find_all(tag):
                 el.extract()
 
-        for cl in self.not_parse_class:
+        for cl in self.not_parse_selectors:
             for el in soup.select(cl):
                 el.extract()
 
