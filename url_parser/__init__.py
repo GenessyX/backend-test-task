@@ -2,18 +2,12 @@ import os
 
 from flask import Flask
 
-
 def create_app(test_config=None):
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
     app.config.from_mapping(
         SECRET_KEY="dev",
     )
-
-    # Configure caching.
-    app.config["CACHE_FOLDER"] = "cache"
-    app.config["CACHE"] = 1
-    app.config["CACHE_DURATION"] = 12 * 60 * 60  # 12 hrs.
 
     # Trim whitespaces from generated txt
     app.jinja_env.trim_blocks = True
