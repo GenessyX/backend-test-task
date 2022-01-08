@@ -12,7 +12,9 @@ parser = Parser(
     templates_path="url_parser/templates",
     caching=CACHE,
     caching_duration=CACHE_DURATION,
-    cache_folder=CACHE_FOLDER)
+    cache_folder=CACHE_FOLDER,
+)
+
 
 @bp.route("/", methods=["GET"])
 def parse_url_page():
@@ -36,8 +38,8 @@ def parse_url_page():
     except Exception as e:
         abort(e[0], e[1])
 
-    width = int(request.args.get('width') or 200)
-    img_flag = int(request.args.get('img') or 1)
+    width = int(request.args.get("width") or 200)
+    img_flag = int(request.args.get("img") or 1)
 
     file_name = parser.generate_file_name(url, width, img_flag)
 
@@ -51,9 +53,7 @@ def parse_url_page():
     soup = parser.get_soup(response)
     cleaned_soup = parser.clean_soup(soup)
     rendered_template = parser.render_template(
-        soup=cleaned_soup, 
-        width=width,
-        img_flag=img_flag
+        soup=cleaned_soup, width=width, img_flag=img_flag
     )
 
     tmp = parser.generate_txt_file(rendered_template)
