@@ -1,13 +1,17 @@
 {%- if error -%}
 {{ "{}\n{}".format(error.args[0], error.args[1]) }}
 {%- else -%}
-{% set end_parse_tags = ['td', 'pre', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']%}
+{% set end_parse_tags = ['p', 'pre', 'dt', 'dd', 'image'] %}
 {%- for child in soup.children recursive -%}
 {%- if child.children | first and child.name not in end_parse_tags -%}
 {{ loop(child.children) }}
 {%- else -%}
 {%- if child.name == 'img' and child.attrs.get('src') and img_flag -%}
-{{ child.attrs.get('src').lstrip("/") + "\n" }}
+{{ child.attrs.get('src') + "\n" }}
+{%- elif child.name in ['pre', 'code'] -%}
+{{ child.get_text().strip() }}
+{%- elif child.name == 'image' -%}
+{{ child.get_text().strip() + "\n" }}
 {%- elif child.get_text().strip() -%}
 {{ child.get_text().replace("\n", " ").strip() | wordwrap(width) }}
 {% endif -%}

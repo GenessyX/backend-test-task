@@ -28,8 +28,11 @@ class Parser:
         caching: int = 1,
         caching_duration: int = 12 * 60 * 60,
         cache_folder: str = "cache",
-        mode: str = "web-service",
+        img: int = 1
     ):
+        self.session = requests.session()
+        self.session.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0'})
+
         self.templates_path = templates_path
         self.template = self.init_template_env()
 
@@ -47,17 +50,31 @@ class Parser:
             "nav",
             "header",
             "footer",
+            "noindex",
             "menu",
         ]
         self.not_parse_selectors = [
+            "[class*='footer']",
+            "[class*='modal']",
             "[class*='social']",
             "[class*='banner']",
             "[class*='menu']",
-            "[class*='tags']",
+            "[class*='tag']",
             "[class*='news-feed']",
             "[width='1']",
-            "[height='1']"
+            "[width='0']",
+            "[height='1']",
+            "[height='0']",
+            "[class*='news-feed']",
+            "[class*='meta']",
+            "[class*='widget']",
+            "[class*='alert']",
+            "[class*='loader']",
+            "[class*='info']",
+            "[class*='popover']"
             ]
+
+        self.img = img
 
     @staticmethod
     def get_soup(response):
@@ -79,13 +96,25 @@ class Parser:
         # remove head
         soup.find("head").extract()
 
+        
+        for image in soup.find_all("img"):
+            if self.img:
+                if image.attrs.get('src'):
+                    a_tag = soup.new_tag('image')
+                    a_tag.string = "\n" + image.attrs.get('src').lstrip("/")
+                    image.replace_with(a_tag)
+                else:
+                    image.extract()
+            else:
+                image.extract()
+
         return soup
 
     def init_template_env(self):
         templateLoader = jinja2.FileSystemLoader(
             searchpath=os.path.join(os.getcwd(), self.templates_path)
         )
-        templateEnv = jinja2.Environment(loader=templateLoader)
+        templateEnv = jinja2.Environment(loader=templateLoader, extensions=['jinja2.ext.loopcontrols'])
         TEMPLATE_FILE = "response.txt.jinja"
         template = templateEnv.get_template(TEMPLATE_FILE)
         return template
@@ -93,13 +122,12 @@ class Parser:
     def render_template(self, **kwargs):
         return self.template.render(**kwargs)
 
-    @staticmethod
-    def get_and_check_url_response(url):
+    def get_and_check_url_response(self, url):
         if not urllib.parse.urlparse(url).scheme:
             url = "https://" + url
 
         try:
-            response = requests.get(url)
+            response = self.session.get(url)
         except requests.exceptions.ConnectionError:
             raise Exception(400, "Connection to this url can't be esatblished")
         except requests.exceptions.InvalidURL:
@@ -165,7 +193,7 @@ def main():
     save = args.save
     print_flag = args.print
 
-    parser = Parser(caching=args.cache)
+    parser = Parser(caching=args.cache, img=img_flag)
     if parser.caching or save:
         cached_file_path = parser.generate_cache_path(url, width, img_flag)
         if parser.file_exists_in_cache(cached_file_path):

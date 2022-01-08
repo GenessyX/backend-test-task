@@ -36,11 +36,11 @@ def parse_url_page():
     try:
         response = parser.get_and_check_url_response(url)
     except Exception as e:
-        abort(e[0], e[1])
+        abort(e.args[0], e.args[1])
 
     width = int(request.args.get("width") or 200)
     img_flag = int(request.args.get("img") or 1)
-
+    parser.img = img_flag
     file_name = parser.generate_file_name(url, width, img_flag)
 
     if parser.caching:
