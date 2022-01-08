@@ -7,7 +7,7 @@
 {{ loop(child.children) }}
 {%- else -%}
 {%- if child.name == 'img' and child.attrs.get('src') and img_flag -%}
-{{ child.attrs.get('src') + "\n" }}
+{{ child.attrs.get('src').lstrip("/") + "\n" }}
 {%- elif child.get_text().strip() -%}
 {{ child.get_text().replace("\n", " ").strip() | wordwrap(width) }}
 {% endif -%}
