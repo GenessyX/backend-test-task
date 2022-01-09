@@ -4,12 +4,22 @@
 {% set end_parse_tags = ['p', 'pre', 'dt', 'dd', 'image'] %}
 {%- for child in soup.children recursive -%}
 {%- if child.children | first and child.name not in end_parse_tags -%}
+{%- if child.find("div") -%}
 {{ loop(child.children) }}
+{%- else -%}
+{%- if child.get_text().strip() -%}
+{%- if child.find_all("image") or child.find_all("pre") -%}
+{{ loop(child.children) }}
+{%- else -%}
+{{ child.get_text().strip() | wordwrap(width) + "\n" }}
+{%- endif -%}
+{% endif -%}
+{%- endif -%}
 {%- else -%}
 {%- if child.name == 'img' and child.attrs.get('src') and img_flag -%}
 {{ child.attrs.get('src') + "\n" }}
 {%- elif child.name in ['pre', 'code'] -%}
-{{ child.get_text().strip() }}
+{{ child.get_text().strip() + "\n" }}
 {%- elif child.name == 'image' -%}
 {{ child.get_text().strip() + "\n" }}
 {%- elif child.get_text().strip() -%}
