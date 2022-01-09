@@ -11,7 +11,7 @@
 {%- if child.find_all("image") or child.find_all("pre") -%}
 {{ loop(child.children) }}
 {%- else -%}
-{{ child.get_text().strip() | wordwrap(width) + "\n" }}
+{{ "\n" + child.get_text().strip().replace("\n", " ") | wordwrap(width) + "\n" }}
 {%- endif -%}
 {% endif -%}
 {%- endif -%}
